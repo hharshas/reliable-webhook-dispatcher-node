@@ -2,12 +2,12 @@
 
 A simple Node.js project that shows how to build a reliable webhook delivery system.
 
-This project is useful for system design interviews and resume discussion because it includes:
+This project includes:
 
 - webhook registration
 - encrypted payload delivery
-- Postgres-backed queue
-- background worker pickup
+- Postgres-backed queue (This is for the project only, for prod - SQS or Kafka is preferred - better for delayed message)
+- background worker pickup (cron-like polling worker)
 - retry handling
 - idempotency using delivery ids
 - jitter using sequence numbers
@@ -324,25 +324,3 @@ The worker does not retry permanent client errors:
 - `404`
 
 Retries use exponential backoff plus deterministic jitter from `sequence`.
-
-## System Design Interview Summary
-
-You can explain it like this:
-
-> I built a webhook dispatcher where the API only accepts events and stores delivery jobs in a durable Postgres queue. A background worker picks due jobs using row locks, sends encrypted payloads to client webhooks, and updates delivery status. This makes delivery reliable, retryable, and scalable compared to directly sending webhooks inside the API request.
-
-Important design points:
-
-- **Queue:** `webhook_deliveries` table stores one row per webhook delivery.
-- **Worker:** background process picks due rows and sends them.
-- **DB locks:** `skip locked` prevents two workers from processing the same row.
-- **Idempotency:** every delivery has a stable `id`; clients use it to ignore duplicates.
-- **Retry:** only retry temporary failures, not permanent bad requests.
-- **Jitter:** `sequence` spreads retry timing to avoid retry pileups.
-- **Encryption:** each client gets a private decryption key; we store the public encryption key.
-- **Observability:** delivery status, attempts, sequence, last status code, and last error are stored.
-- **Scale path:** Postgres queue works for this project; at larger scale this can move to SQS, Kafka, or RabbitMQ.
-
-Resume-friendly line:
-
-> Built a reliable webhook dispatcher in Node.js with encrypted payload delivery, PostgreSQL-backed queue, background workers, retry with jitter, idempotency keys, and delivery status tracking.
