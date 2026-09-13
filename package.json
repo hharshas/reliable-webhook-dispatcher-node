@@ -1,14 +1,14 @@
 {
-  "name": "node-mvc-boilerplate",
+  "name": "reliable-webhook-dispatcher-node",
   "version": "1.0.0",
-  "description": "Simple Node.js + Express MVC boilerplate with PostgreSQL (Sequelize)",
+  "description": "Reliable webhook dispatcher with encrypted payloads, PostgreSQL queue, worker pickup, and retries",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "node --test"
   },
-  "keywords": ["node", "express", "mvc", "postgresql", "sequelize", "boilerplate"],
+  "keywords": ["node", "express", "webhooks", "postgresql", "sequelize", "queue", "worker", "retries"],
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.5",

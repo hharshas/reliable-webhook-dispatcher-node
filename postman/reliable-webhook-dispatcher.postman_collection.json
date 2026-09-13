@@ -1,0 +1,74 @@
+{
+  "info": {
+    "name": "Reliable Webhook Dispatcher",
+    "description": "Local test collection for registering webhook endpoints, queueing encrypted deliveries, and checking delivery status.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/"
+      }
+    },
+    {
+      "name": "Register Webhook Endpoint",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"http://localhost:4000/hook\"\n}"
+        },
+        "url": "{{baseUrl}}/api/register-endpoint",
+        "description": "Registers a client webhook URL. The response returns a decryption_key only once, so save it if you want to manually decrypt delivered payloads."
+      }
+    },
+    {
+      "name": "List Registered Endpoints",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/register-endpoint"
+      }
+    },
+    {
+      "name": "Queue Webhook Event",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"event_group\": \"orders\",\n  \"event_name\": \"order.created\",\n  \"payload\": {\n    \"orderId\": 123,\n    \"amount\": 499\n  }\n}"
+        },
+        "url": "{{baseUrl}}/api/deliver-event",
+        "description": "Creates one queued delivery row per registered endpoint. The worker sends the encrypted payload in the background."
+      }
+    },
+    {
+      "name": "List Delivery Jobs",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/deliveries",
+        "description": "Shows queued, retrying, delivered, failed, and dead delivery rows."
+      }
+    }
+  ]
+}
